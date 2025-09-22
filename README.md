@@ -8,7 +8,22 @@ A realistic microservices starter with:
 - **DB**: Postgres connection is shared, with **separate schemas** per service
 - **Migrations**: Flyway (`classpath:/db/migration`)
 
-## Prerequisites
+# Run on the Docker
+### Prerequisites
+
+- Docker
+
+### Start the Containers
+```bash
+# 1) Build the images
+docker compose build --no-cache
+
+# 2) Start the docker container
+docker compose up
+```
+
+# Run on the Local Machine
+### Prerequisites
 
 - Java 17
 - Maven 3.8+
@@ -19,16 +34,19 @@ A realistic microservices starter with:
 
 > Adjust credentials in each service's `application.yml` if yours differ.
 
-## Order to Run (separate terminals)
+### Order to Run (separate terminals)
 
 ```bash
-# 1) Start discovery
+# 1)Start the Config Server:
+mvn -pl config-server spring-boot:run
+
+# 2) Start discovery
 mvn -pl discovery-service spring-boot:run
 
-# 2) Start gateway
+# 3) Start gateway
 mvn -pl api-gateway spring-boot:run
 
-# 3) Start services (can be in any order after discovery is up)
+# 4) Start services (can be in any order after discovery is up)
 mvn -pl department-service spring-boot:run
 mvn -pl employee-service spring-boot:run
 ```
