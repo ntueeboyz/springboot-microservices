@@ -1,19 +1,11 @@
 spring:
   application:
     name: discovery-service
-
-server:
-  port: 8761
-
-eureka:
-  client:
-    register-with-eureka: false
-    fetch-registry: false
-  server:
-    wait-time-in-ms-when-sync-empty: 0
+  config:
+    import: "configserver:"
 
 management:
   endpoints:
     web:
       exposure:
-        include: health,info
+        include: health,info,refresh,env
