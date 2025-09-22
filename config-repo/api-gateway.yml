@@ -5,22 +5,46 @@ spring:
   cloud:
     gateway:
       routes:
-        - id: department
-          uri: lb://DEPARTMENT-SERVICE
+        - id: employee-root
+          uri: lb://EMPLOYEE-SERVICE
           predicates:
-            - Path=/departments/**
+            - Path=/employees
           filters:
-            - StripPrefix=1
+            - SetPath=/api/v1/employees
+
         - id: employee
           uri: lb://EMPLOYEE-SERVICE
           predicates:
             - Path=/employees/**
           filters:
             - StripPrefix=1
+            - RewritePath=^/?(?<remaining>.*)$, /api/v1/employees/${remaining}
+
+        - id: department-root
+          uri: lb://DEPARTMENT-SERVICE
+          predicates:
+            - Path=/departments
+          filters:
+            - SetPath=/api/v1/departments
+
+        - id: department
+          uri: lb://DEPARTMENT-SERVICE
+          predicates:
+            - Path=/departments/**
+          filters:
+            - StripPrefix=1
+            - RewritePath=^/?(?<remaining>.*)$, /api/v1/departments/${remaining}
 
 server:
   port: 8080
 
-logging:
-  level:
-    org.springframework.cloud.gateway: INFO
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
