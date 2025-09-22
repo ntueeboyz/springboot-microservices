@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class ErrorHandling {
 
-    // ---- 400: Bean validation on @RequestBody (@Valid) ----
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ProblemDetail handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
@@ -38,7 +37,6 @@ public class ErrorHandling {
         return pd;
     }
 
-    // ---- 400: Bean validation on @RequestParam/@PathVariable/etc. ----
     @ExceptionHandler({ BindException.class, ConstraintViolationException.class })
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ProblemDetail handleBindingOrConstraint(Exception ex, HttpServletRequest req) {
@@ -65,7 +63,6 @@ public class ErrorHandling {
         return pd;
     }
 
-    // ---- 404: resource not found ----
     @ExceptionHandler({ EntityNotFoundException.class, NoSuchElementException.class })
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ProblemDetail handleNotFound(RuntimeException ex, HttpServletRequest req) {
@@ -75,8 +72,6 @@ public class ErrorHandling {
         return pd;
     }
 
-    // ---- 409: business rule / duplicates / invalid state ----
-    // If you prefer 400, change HttpStatus.CONFLICT to HttpStatus.BAD_REQUEST below.
     @ExceptionHandler({ IllegalArgumentException.class, DuplicateResourceException.class })
     @ResponseStatus(HttpStatus.CONFLICT)
     public ProblemDetail handleBusiness(RuntimeException ex, HttpServletRequest req) {
@@ -86,7 +81,6 @@ public class ErrorHandling {
         return pd;
     }
 
-    // ---- 500: fall-through ----
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ProblemDetail handleUnknown(Exception ex, HttpServletRequest req) {
@@ -108,7 +102,6 @@ public class ErrorHandling {
                 .orElseGet(() -> UUID.randomUUID().toString()));
     }
 
-    // Optional custom exception to be thrown from services where appropriate
     public static class DuplicateResourceException extends RuntimeException {
         public DuplicateResourceException(String message) { super(message); }
     }

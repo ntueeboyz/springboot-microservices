@@ -34,6 +34,5 @@ logging:
   level:
     com.example.employee: INFO
 
-# Example feature flag (just to demo refresh)
 features:
   employee-enrichment: true
