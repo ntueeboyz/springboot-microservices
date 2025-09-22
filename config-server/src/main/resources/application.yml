@@ -5,13 +5,13 @@ spring:
   application:
     name: config-server
   profiles:
-    active: native  # serve from filesystem
+    active: native
   cloud:
     config:
       server:
         native:
           search-locations:
-            - file:../config-repo   # relative to config-server working dir
+            - file:../config-repo
 
 management:
   endpoints:
