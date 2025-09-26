@@ -8,3 +8,8 @@ management:
     web:
       exposure:
         include: health,info,refresh,env
+
+logging:
+  logstash:
+    host: logstash
+    port: 5044

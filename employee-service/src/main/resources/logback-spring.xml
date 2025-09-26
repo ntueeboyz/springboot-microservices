@@ -1,0 +1,45 @@
+<configuration scan="true">
+    <!-- Spring-backed properties -->
+    <springProperty scope="context" name="APP_NAME" source="spring.application.name"/>
+    <springProperty scope="context" name="LS_ENABLED" source="logging.logstash.enabled" defaultValue="true"/>
+    <springProperty scope="context" name="LS_HOST" source="logging.logstash.host" defaultValue="localhost"/>
+    <springProperty scope="context" name="LS_PORT" source="logging.logstash.port" defaultValue="5000"/>
+
+    <!-- Console (human-friendly) -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{ISO8601} %-5level [%thread] %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Logstash JSON over TCP -->
+    <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+        <enabled>${LS_ENABLED}</enabled>
+        <!-- IMPORTANT: use destination instead of host/port -->
+        <destination>${LS_HOST}:${LS_PORT}</destination>
+
+        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <providers>
+                <timestamp/>
+                <version/>
+                <loggerName/>
+                <threadName/>
+                <logLevel/>
+                <message/>
+                <arguments/>
+                <stackTrace/>
+                <context/>
+                <mdc/>
+                <globalCustomFields>{"service":"${APP_NAME}"}</globalCustomFields>
+            </providers>
+        </encoder>
+
+        <keepAliveDuration>30 seconds</keepAliveDuration>
+        <reconnectionDelay>3 seconds</reconnectionDelay>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="LOGSTASH"/>
+    </root>
+</configuration>
