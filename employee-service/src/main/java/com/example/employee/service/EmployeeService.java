@@ -55,7 +55,6 @@ public class EmployeeService {
 
     @Transactional
     public EmployeeDTO create(EmployeeDTO dto, String idempotencyKey) {
-        // Enforce email unique
         if (repository.existsByEmail(dto.getEmail())) {
             throw new IllegalArgumentException("Email already exists");
         }

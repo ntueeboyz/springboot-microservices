@@ -8,6 +8,22 @@ logging:
 spring:
   profiles:
     active: default
+  cloud:
+    openfeign:
+          circuitbreaker:
+            enabled: true
+          httpclient:
+            hc5:
+              enabled: true
+          compression:
+            request:
+              enabled: true
+            response:
+              enabled: true
+    gateway:
+      httpclient:
+              connect-timeout: 1000
+              response-timeout: 2s
 
 eureka:
   client:
@@ -18,4 +34,38 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info,refresh,env
+        include: health,info,metrics,circuitbreakers,circuitbreakerevents
+  endpoint:
+    health:
+          show-details: always
+          show-components: always
+
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 1000
+        readTimeout: 1500
+        loggerLevel: BASIC
+
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        slidingWindowSize: 20
+        permittedNumberOfCallsInHalfOpenState: 3
+        failureRateThreshold: 50
+        slowCallRateThreshold: 50
+        slowCallDurationThreshold: 1s
+        minimumNumberOfCalls: 10
+        waitDurationInOpenState: 15s
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        recordExceptions:
+          - java.io.IOException
+          - java.net.SocketTimeoutException
+          - feign.RetryableException
+    instances:
+      departmentClient:
+        baseConfig: default
+      employeeClient:
+        baseConfig: default

@@ -7,7 +7,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 import java.util.Map;
 
-@FeignClient(name = "EMPLOYEE-SERVICE", path = "/api/v1/employees")
+@FeignClient(
+        name = "EMPLOYEE-SERVICE",
+        path = "/api/v1/employees",
+        contextId = "employeeClient",
+        fallbackFactory = EmployeeClientFallback.Factory.class
+)
 public interface EmployeeClient {
 
     // We’ll reuse employee list endpoint with department filter for protective delete (size=1 is enough).

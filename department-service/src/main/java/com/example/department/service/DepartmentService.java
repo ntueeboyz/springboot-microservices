@@ -22,7 +22,6 @@ public class DepartmentService {
     private final DepartmentRepository repository;
     private final EmployeeClient employeeClient;
 
-    // List with pagination/sort/filters
     public Page<DepartmentDTO> list(int page, int size, Sort sort, String nameContains, String code) {
         Pageable pageable = PageRequest.of(page, size, sort);
         Specification<Department> spec = Specification.where(DepartmentSpecifications.nameContains(nameContains))

@@ -17,12 +17,45 @@ services:
       timeout: 3s
       retries: 20
 
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.14.3
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false   # dev only
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    ports: [ "9200:9200" ]
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9200/_cluster/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.14.3
+    container_name: kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports: [ "5601:5601" ]
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.14.3
+    container_name: logstash
+    ports: [ "5044:5044" ]  # TCP input from apps
+    volumes:
+      - ./observability/logstash/pipeline:/usr/share/logstash/pipeline:ro
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+
   config-server:
     build:
       context: .
       dockerfile: config-server/Dockerfile
     environment:
-      # config clients will use this URL
       SERVER_PORT: 8888
     volumes:
       - ./config-repo:/config-repo:ro
@@ -80,7 +113,6 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: docker
       SPRING_CLOUD_CONFIG_URI: http://config-server:8888
-      # (Optional) Tweak JVM:
       JAVA_OPTS: "-XX:MaxRAMPercentage=75.0"
     ports:
       - "8082:8082"
