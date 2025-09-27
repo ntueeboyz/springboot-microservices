@@ -17,7 +17,7 @@ A realistic microservices starter with:
 - **ELK Stack**
   - Centralized logging: Elasticsearch, Logstash, Kibana.
 
-## H
+## How to Run
 ### Prerequisites
 - Docker
 
